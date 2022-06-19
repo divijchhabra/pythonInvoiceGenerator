@@ -9,20 +9,15 @@ import pdfkit
 print('Hi, This is an HTML to PDF converter\n')
 
 #Taking all the required inputs
-customer=input('Please input the Customer CSV file path.').strip("'").strip('"')
-service= input('Please input the Company CSV file path.').strip("'").strip('"')
+inputcsv=input('Please input the Customer CSV file path.').strip("'").strip('"')
 htmlSavePath=input('Please input the path of the Folder to save HTML files in.').strip("'").strip('"')
 pdfSavePath=input('Please input the path of the Folder to save PDF files in.').strip("'").strip('"')
 
 #Reading the csv with customer data
-df=pd.read_csv(customer,sep=';')
+df=pd.read_csv(inputcsv,sep=';')
 #Cleaning the data
 df.replace('"', '', inplace=True, regex=True)
 
-#Reading the csv with company data 
-servdf=pd.read_csv(service,sep=';')
-#Cleaning the data
-servdf.replace('"', '', inplace=True, regex=True)
 
 class DictToClass(object):
     '''
@@ -34,8 +29,8 @@ class DictToClass(object):
 
 
 print(df.head())
-print(str(len(df))+' records found in Customers data\n')
-print(str(len(servdf))+' records found in Company data\n')
+print(str(len(df))+' records found in CSV data\n')
+
 
 print('\nConverting...\n')
 
@@ -67,25 +62,22 @@ def html2pdf(html, pdf):
 
 
 #Renders HTML file filled with data and saves it as customer_first_name.html
-def renderHtml(path,data,service_data):
+def renderHtml(path,data):
     fileLoader=FileSystemLoader('templates')
     env=Environment(loader=fileLoader)
 
     env.filters["datetime_format"] = datetime_format
-    rendered=env.get_template('template.html').render(invoice_id=data.invoice_id,data=data,invoice_type=data.invoice_type,service_data=service_data)
+    rendered=env.get_template('template.html').render(invoice_id=data.invoice_id,data=data,invoice_type=data.invoice_type,service_data=data)
     with open(f"{htmlSavePath}/{data.first_name}.html","w") as f:
         f.write(rendered)
 
 try:
     for i in range(10):
         d1=df.iloc[i].to_dict()
-        d2=servdf.iloc[i].to_dict()
         data=DictToClass(d1)          
-        service_data=DictToClass(d2)
-
         
         html_path = f'{htmlSavePath}/{data.first_name}.html'
-        renderHtml(html_path,data,service_data)
+        renderHtml(html_path,data)
         
         pdf_path = f'{pdfSavePath}/{data.first_name}.pdf'
         html2pdf(html_path,pdf_path)
