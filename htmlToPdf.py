@@ -72,14 +72,18 @@ def renderHtml(path,data):
         f.write(rendered)
 
 try:
-    for i in range(10):
+    for i in range(len(df)):
         d1=df.iloc[i].to_dict()
         data=DictToClass(d1)          
-        
+
+        ind=df.index[df['invoice_id']==data.invoice_id].values[0]
+        print(ind)
         html_path = f'{htmlSavePath}/{data.first_name}.html'
         renderHtml(html_path,data)
-        
-        pdf_path = f'{pdfSavePath}/{data.first_name}.pdf'
+        if(str(data.invoice_type).lower()=='invoice'):
+            pdf_path = f'{pdfSavePath}/Inv.{ind+1}_{data.product_name}_{datetime_format(data.created_at)}.pdf'
+        else:
+            pdf_path = f'{pdfSavePath}/CrInv.{ind+1}_{data.product_name}_{datetime_format(data.refunded_at)}.pdf'
         html2pdf(html_path,pdf_path)
     print('\nALL DONE! The pdf files have now been saved.')
 
