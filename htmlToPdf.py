@@ -76,14 +76,14 @@ try:
         d1=df.iloc[i].to_dict()
         data=DictToClass(d1)          
 
-        ind=df.index[df['invoice_id']==data.invoice_id].values[0]
+        ind=data.invoice_id
         print(ind)
         html_path = f'{htmlSavePath}/{data.first_name}.html'
         renderHtml(html_path,data)
         if(str(data.invoice_type).lower()=='invoice'):
-            pdf_path = f'{pdfSavePath}/Inv.{ind+1}_{data.product_name}_{datetime_format(data.created_at)}.pdf'
+            pdf_path = f'{pdfSavePath}/Inv.{ind}_{data.product_name}_{datetime_format(data.created_at)}.pdf'
         else:
-            pdf_path = f'{pdfSavePath}/CrInv.{ind+1}_{data.product_name}_{datetime_format(data.refunded_at)}.pdf'
+            pdf_path = f'{pdfSavePath}/CrInv.{ind}_{data.product_name}_{datetime_format(data.refunded_at)}.pdf'
         html2pdf(html_path,pdf_path)
     print('\nALL DONE! The pdf files have now been saved.')
 
